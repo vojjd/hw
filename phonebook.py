@@ -2,7 +2,7 @@ from csv import DictReader, DictWriter
 from os.path import exists
 
 class NameError(Exception):
-    def init(self, txt):
+    def __init__(self, txt):  
         self.txt = txt
 
 def get_info():
@@ -24,12 +24,10 @@ def get_info():
             flag = True
     return [first_name, second_name, phone_number]
 
-    
 def create_file(file_name):
     with open(file_name, 'w', encoding='utf-8', newline='') as data:
         f_w = DictWriter(data, fieldnames=['first_name', 'second_name', 'phone_number'])
         f_w.writeheader()
-    
 
 def write_file(file_name):
     user_data = get_info()
@@ -41,12 +39,10 @@ def write_file(file_name):
         f_w.writeheader()
         f_w.writerows(res)
 
-
 def read_file(file_name):
     with open(file_name, encoding='utf-8') as data:
         f_r = DictReader(data)
-        return list(f_r) #ящик со словарями
-            
+        return list(f_r)  
 
 def remove_row(file_name):
     search = int(input('Введите номер строки для удаления: '))
@@ -58,6 +54,14 @@ def remove_row(file_name):
         f_w.writerows(res)
 
 
+def copy_rows(source_file, destination_file):
+    content = read_file(source_file)
+    with open(destination_file, 'w', encoding='utf-8', newline='') as data:
+        f_w = DictWriter(data, fieldnames=['first_name', 'second_name', 'phone_number'])
+        f_w.writeheader()
+        f_w.writerows(content)
+    print("Строки успешно скопированы.")
+
 file_name = 'phone.csv'
 def main():
     while True:
@@ -66,19 +70,22 @@ def main():
             break
         elif command == 'w':
             if not exists(file_name):
-                create_file (file_name)
+                create_file(file_name)
             write_file(file_name)
         elif command == 'r':
             if not exists(file_name):
-                print('Файл отсутствует, пожалуйста , создайте файл')
+                print('Файл отсутствует, пожалуйста, создайте файл')
                 continue
-            print(*read_file(file_name))
+            print(*read_file(file_name), sep='\n')
         elif command == 'd':
             if not exists(file_name):
-                print('Файл отсутствует, пожалуйста , создайте файл')
+                print('Файл отсутствует, пожалуйста, создайте файл')
                 continue
-            remove_row(file_name)   
-  
+            remove_row(file_name)
+        elif command == 'c':  
+            if not exists(file_name):
+                print('Файл отсутствует, пожалуйста, создайте файл.')
+            else:
+                copy_rows('phone.csv', 'phonebook.csv')
 
- 
 main()
